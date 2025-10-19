@@ -109,6 +109,7 @@ public class ABB<T extends Comparable<T>> {
     public void eliminar(T elem){
         Nodo eliminar = _raiz;
         if (pertenece(elem)) {
+            _cardinal -= 1;
             while (eliminar.valor != elem) {
                 if (elem.compareTo(eliminar.valor) > 0) {
                     eliminar = eliminar.der;
@@ -116,77 +117,51 @@ public class ABB<T extends Comparable<T>> {
                     eliminar = eliminar.izq;
                 }
             }
-            if (eliminar.izq != null & eliminar.der == null & eliminar != _raiz) {
-                if (eliminar.valor.compareTo(eliminar.padre.valor) > 0) {
-                    eliminar.izq.padre = eliminar.padre;
-                    eliminar.padre.der = eliminar.izq;
-                    _cardinal -= 1;
-                } else if (eliminar.valor.compareTo(eliminar.padre.valor) < 0) {
-                    eliminar.izq.padre = eliminar.padre;
-                    eliminar.padre.izq = eliminar.izq;
-                    _cardinal -= 1;
-                }
-            } else if (eliminar.izq == null & eliminar.der != null & eliminar != _raiz) {
-                if (eliminar.valor.compareTo(eliminar.padre.valor) > 0) {
-                    eliminar.der.padre = eliminar.padre;
-                    eliminar.padre.der = eliminar.der;
-                    _cardinal -= 1;
-                } else if (eliminar.valor.compareTo(eliminar.padre.valor) < 0) {
-                    eliminar.der.padre = eliminar.padre;
-                    eliminar.padre.izq = eliminar.der;
-                    _cardinal -= 1;
-                }
-            } else if (eliminar.izq == null & eliminar.der == null & eliminar != _raiz) {
-                if (eliminar.valor.compareTo(eliminar.padre.valor) > 0) {
-                    eliminar.padre.der = null;
-                    _cardinal -= 1;
-                } else if (eliminar.valor.compareTo(eliminar.padre.valor) < 0) {
-                    eliminar.padre.izq = null;
-                    _cardinal -= 1;
-                }
-            } else if (eliminar.der != null & eliminar.izq != null & eliminar != _raiz) {
-                Nodo sucesor_inmediato = eliminar.der;
-                while (sucesor_inmediato.izq != null) {
-                    sucesor_inmediato = sucesor_inmediato.izq;
-                }
-                if (sucesor_inmediato.der != null & sucesor_inmediato.padre.valor != elem) {
-                    sucesor_inmediato.padre.izq = sucesor_inmediato.der;
-                    sucesor_inmediato.der.padre = sucesor_inmediato.padre;
-                    sucesor_inmediato.der = eliminar.der;
-                    eliminar.der.padre = sucesor_inmediato;
-                }
-                sucesor_inmediato.padre = eliminar.padre;
-                if (eliminar.valor.compareTo(eliminar.padre.valor) > 0) {
-                    eliminar.padre.der = sucesor_inmediato;
+            if(eliminar.der == null & eliminar.izq == null){
+                if (eliminar != _raiz) {
+                    if(eliminar.valor.compareTo(eliminar.padre.valor) > 0){
+                        eliminar.padre.der = null;
+                    } else {
+                        eliminar.padre.izq = null;
+                    }
                 } else {
-                    eliminar.padre.izq = sucesor_inmediato;
+                    _raiz = null;
                 }
-                sucesor_inmediato.izq = eliminar.izq;
-                eliminar.izq.padre = sucesor_inmediato;
-                _cardinal -= 1;
-            } else if (eliminar == _raiz & eliminar.der != null & eliminar.izq == null) {
-                eliminar.der.padre = null;
-                _raiz = eliminar.der;
-                _cardinal -= 1;
-            } else if (eliminar == _raiz & eliminar.der == null & eliminar.izq != null) {
-                eliminar.izq.padre = null;
-                _raiz = eliminar.izq;
-                _cardinal -= 1;
-            } else if (eliminar == _raiz & eliminar.der != null & eliminar.izq != null) {
-                Nodo sucesor_inmediato = eliminar.der;
-                while (sucesor_inmediato.izq != null) {
-                    sucesor_inmediato = sucesor_inmediato.izq;
+                
+            } else if (eliminar.der != null & eliminar.izq == null) {
+                if (eliminar != _raiz) {
+                    eliminar.der.padre = eliminar.padre;
+                    if(eliminar.valor.compareTo(eliminar.padre.valor) > 0){
+                        eliminar.padre.der = eliminar.der;
+                    } else {
+                        eliminar.padre.izq = eliminar.der;
+                    }
+                } else {
+                    _raiz = eliminar.der;
+                    eliminar.der.padre = null;
                 }
-                if (sucesor_inmediato.der != null & sucesor_inmediato.padre.valor != elem) {
-                    sucesor_inmediato.padre.izq = sucesor_inmediato.der;
-                    sucesor_inmediato.der.padre = sucesor_inmediato.padre;
-                    sucesor_inmediato.der = eliminar.der;
-                    eliminar.der.padre = sucesor_inmediato;
-                } 
-                sucesor_inmediato.padre = null;
-                sucesor_inmediato.izq = eliminar.izq;
-                eliminar.izq.padre = sucesor_inmediato;
-                _cardinal -= 1;
+            } else if (eliminar.der == null & eliminar.izq != null) {
+                if (eliminar != _raiz) {
+                    eliminar.izq.padre = eliminar.padre;
+                    if(eliminar.valor.compareTo(eliminar.padre.valor) > 0){
+                        eliminar.padre.der = eliminar.izq;
+                    } else {
+                        eliminar.padre.izq = eliminar.izq;
+                    }
+                } else {
+                    _raiz = eliminar.izq;
+                    eliminar.izq.padre = null;
+                }
+            } else if (eliminar.der != null & eliminar.izq != null) {
+                Nodo sucesor_inmediato = eliminar.izq;
+                while (sucesor_inmediato.der != null) {
+                    sucesor_inmediato = sucesor_inmediato.der;
+                }
+                if (eliminar != _raiz) {
+                    
+                } else {
+                    _raiz = sucesor_inmediato;
+                }
             }
         }
     }
