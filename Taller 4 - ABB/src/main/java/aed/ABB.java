@@ -160,7 +160,13 @@ public class ABB<T extends Comparable<T>> {
                 if (eliminar != _raiz) {
                     
                 } else {
-                    if (sucesor_inmediato.izq != null) {
+                    _raiz = sucesor_inmediato;
+                    if (sucesor_inmediato.padre == eliminar) {
+                        if (sucesor_inmediato.izq != null) {
+                            
+                        }
+                    }
+                    if (sucesor_inmediato.izq != null & sucesor_inmediato.padre != eliminar) {
                         if (sucesor_inmediato.valor.compareTo(sucesor_inmediato.padre.valor) > 0) {
                             sucesor_inmediato.padre.der = sucesor_inmediato.izq;
                             sucesor_inmediato.izq.padre = sucesor_inmediato.padre;
