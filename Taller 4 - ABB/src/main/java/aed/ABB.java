@@ -35,7 +35,7 @@ public class ABB<T extends Comparable<T>> {
 
     public T minimo(){
         Nodo actual = _raiz;
-        while (actual != null & actual.izq != null) {
+        while (actual != null && actual.izq != null) {
             actual = actual.izq;
         }
         return actual.valor;
@@ -43,7 +43,7 @@ public class ABB<T extends Comparable<T>> {
 
     public T maximo(){
         Nodo actual = _raiz;
-        while (actual != null & actual.der != null) {
+        while (actual != null && actual.der != null) {
             actual = actual.der;
         }
         return actual.valor;
@@ -71,7 +71,7 @@ public class ABB<T extends Comparable<T>> {
                     } else {
                         actual.izq = new Nodo(elem);
                         actual.izq.padre = actual;
-                        _cardinal += + 1;
+                        _cardinal += 1;
                         return;
                     }
                 } else {
@@ -130,11 +130,12 @@ public class ABB<T extends Comparable<T>> {
                 
             } else if (eliminar.der != null & eliminar.izq == null) {
                 if (eliminar != _raiz) {
-                    eliminar.der.padre = eliminar.padre;
                     if(eliminar.valor.compareTo(eliminar.padre.valor) > 0){
                         eliminar.padre.der = eliminar.der;
+                        eliminar.der.padre = eliminar.padre;
                     } else {
                         eliminar.padre.izq = eliminar.der;
+                        eliminar.der.padre = eliminar.padre;
                     }
                 } else {
                     _raiz = eliminar.der;
@@ -157,52 +158,85 @@ public class ABB<T extends Comparable<T>> {
                 while (sucesor_inmediato.der != null) {
                     sucesor_inmediato = sucesor_inmediato.der;
                 }
-                if (eliminar != _raiz) {
-                    
-                } else {
-                    _raiz = sucesor_inmediato;
-                    if (sucesor_inmediato.padre == eliminar) {
-                        if (sucesor_inmediato.izq != null) {
-                            
-                        }
-                    }
-                    if (sucesor_inmediato.izq != null & sucesor_inmediato.padre != eliminar) {
-                        if (sucesor_inmediato.valor.compareTo(sucesor_inmediato.padre.valor) > 0) {
-                            sucesor_inmediato.padre.der = sucesor_inmediato.izq;
-                            sucesor_inmediato.izq.padre = sucesor_inmediato.padre;
-                        } else {
-                            sucesor_inmediato.padre.izq = sucesor_inmediato.izq;
-                            sucesor_inmediato.izq.padre = sucesor_inmediato.padre;
-                        }
+                
+                if (sucesor_inmediato.padre != eliminar) {
+                    sucesor_inmediato.padre.der = sucesor_inmediato.izq;
+                    if (sucesor_inmediato.izq != null) {
+                        sucesor_inmediato.izq.padre = sucesor_inmediato.padre;
                     }
                     sucesor_inmediato.izq = eliminar.izq;
-                    sucesor_inmediato.der = eliminar.der;
-                    sucesor_inmediato.padre = null;
+                    eliminar.izq.padre = sucesor_inmediato;
+                }
+                sucesor_inmediato.der = eliminar.der;
+                eliminar.der.padre = sucesor_inmediato;
+                sucesor_inmediato.padre = eliminar.padre;
+                
+                if (eliminar == _raiz) {
                     _raiz = sucesor_inmediato;
+                } else {
+                    if (eliminar.valor.compareTo(eliminar.padre.valor) > 0) {
+                        eliminar.padre.der = sucesor_inmediato;
+                    } else {
+                        eliminar.padre.izq = sucesor_inmediato;
+                    }
                 }
             }
         }
     }
 
     public String toString(){
-        throw new UnsupportedOperationException("No implementada aun");
+        String res = "";
+        ABB_Iterador dedito = this.iterador();
+        if (dedito.haySiguiente()) {
+            res += dedito.siguiente().toString();
+            while (dedito.haySiguiente()) {
+                res += ",";
+                res += dedito.siguiente().toString();
+            }
+        }
+        
+        return "{" + res + "}";
     }
 
     public class ABB_Iterador {
         private Nodo _actual;
 
-        public boolean haySiguiente() {            
-            return _actual.der != null;
+        public boolean haySiguiente() {    
+            return _actual != null;
         }
     
         public T siguiente() {
-            _actual = _actual.der;
-            return _actual.valor;
+            if (haySiguiente()) {  
+                T res = _actual.valor;
+                if(_actual.der != null){
+                    _actual = _actual.der;
+                    while (_actual.izq != null) {
+                        _actual = _actual.izq;
+                    }
+                } else {
+                    Nodo padre = _actual.padre;
+                    while (padre != null && _actual == padre.der) {
+                        _actual = padre;
+                        padre = padre.padre;
+                    }
+                    _actual = padre;
+                }
+                return res;
+            } else {
+                return null;
+            }
+            
         }
     }
 
     public ABB_Iterador iterador() {
-        return new ABB_Iterador();
+        ABB_Iterador iterador = new ABB_Iterador();
+        iterador._actual = _raiz;
+        if (iterador._actual != null) {
+            while (iterador._actual.izq != null) {
+            iterador._actual = iterador._actual.izq;
+            }
+        }
+        return iterador;
     }
-
 }
