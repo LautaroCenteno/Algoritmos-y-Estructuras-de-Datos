@@ -142,7 +142,7 @@ Modulo ECIInscripcionesImpl implementa ECIInscripciones <
 
     var materias: DiccionarioTrie< Materia, struct< capacidad: Capacidad, inscriptos: ConjuntoLog<Alumno>, pendientes: ColaSobreLista<Alumno> > >
 
-    proc abrirMateria(inout i : Inscripciones, in m : Materia, in c : Capacidad) {
+    proc abrirMateria(inout i : Inscripciones, in m : Materia, in c : Capacidad) {     //O(1)
         var valor: struct< capacidad: Capacidad, inscriptos: ConjuntoLog<Alumno>, pendientes: ColaSobreLista<Alumno> >     //O(1)
         valor.capacidad := c     //O(1)
         valor.inscriptos := new ConjuntoLog<Alumno>()     //O(1)
@@ -164,20 +164,23 @@ Modulo ECIInscripcionesImpl implementa ECIInscripciones <
         endif
     }
 
-    proc DarseDeBaja(inout i : Inscripciones, in m : Materia, in a : Alumno){
+    proc DarseDeBaja(inout i : Inscripciones, in m : Materia, in a : Alumno){     //O(log(a_m))
         var estadoMateria: struct< capacidad: Capacidad, inscriptos: ConjuntoLog<Alumno>, pendientes: ColaSobreLista<Alumno> >     //O(1)
         estadoMateria := i.materias.obtener(m)     //O(1)
         estadoMateria.inscriptos.sacar(a)     //O(log(a_m))
         if not estadoMateria.pendientes.vacia() do
-            var alumnoCola: Alumno
-            alumnoCola := estadoMateria.pendientes.desencolar()
-            estadoMateria.inscriptos.agregar(alumnoCola)
+            var alumnoCola: Alumno     //O(1)
+            alumnoCola := estadoMateria.pendientes.desencolar()     //O(1)
+            estadoMateria.inscriptos.agregar(alumnoCola)     //O(log(a_m))
         endif
-        i.definir(m, estadoMateria)
+        i.definir(m, estadoMateria)     //O(1)
     }
 
-    proc InscriptosMateria(in i : Inscripciones, in m : Materia) : Conjunto(Alumno) {
+    proc InscriptosMateria(in i : Inscripciones, in m : Materia) : Conjunto(Alumno) {     //O(1)
         var conjInscriptos: ConjuntoLog<Alumno>     //O(1)
         conjInscriptos := i.obtener(m).inscriptos     //O(1)
         return conjInscriptos     //O(1)
     }
+>
+
+Ejercicio 14
