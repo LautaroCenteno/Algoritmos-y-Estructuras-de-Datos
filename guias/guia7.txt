@@ -1,0 +1,183 @@
+Ejercicio 7
+
+Modulo SistemaImpl implementa Sistema <
+    var materias diccAVL<materia, struct<notasPorAlumno: diccAVL<alumno, nota>, cantPorNota: Array<int>>>
+
+    proc nuevoSistema(): SistemaImpl {
+        res.materias := new diccAVL<materia, struct<notaPorAlumno: diccAVL<alumno, nota>, cantPorNota: Array<int>>>()     //O(1)
+        return res
+    }
+
+    proc registrarMateria(inout s: SistemaImpl, in m: materia) {
+            var: avlAlumnos: diccAVL<alumno, nota>     //O(1)
+            avlAlumnos := new diccAVL<alumno, nota>     //O(1)
+            var valor: struct<notaPorAlumno: diccAVL<alumno, nota>, cantAprobados: int>     //O(1)
+            valor.notaPorAlumno := avlAlumnos     //O(1)
+            valor.cantPorNota := new Array (10)     //O(1)
+            for i in range(9)
+                valor.cantPorNota[i] := 0
+            endfor
+            s.definir(m, valor)              //O(log m)                
+    }
+
+    proc registrarNota(inout s: Sistema, in a: alumno, in m: materia, in n: nota) {                 //O(log n + log m)
+        if s.está(m) do                                                                             //O(log m)     
+            var valorMateria: struct<notasPorAlumno: diccAVL<alumno, nota>, cantPorNota: Array<int>>     //O(1)
+            valorMateria := s.obtener(m)                                                            //O(log m)
+            valorMateria.notasPorAlumno.definir(a, n)                                               //O(log n)                                                                           //O(1)
+            valorMateria.cantPorNota[n - 1] := valorMateria.cantAprobados[n - 1] + 1                        //O(1)
+            s.definir(m, valorMateria)                                                              //O(log m)
+        endif
+    }
+
+    proc notaDeAlumno(in s: Sistema, in a: alumno, in m: materia): nota {
+        if s.pertenece(m)
+            if s.obtener(m).pertenece(a)
+                return s.obtener(m).obtener(a)
+            endif
+        endif
+    }
+
+    proc cantAlumnosConNota(in s: Sistema, in m: materia, in n: nota): Z {                       //O(log m)
+        if s.pertenece(m)                                                            //O(log m)
+            return s.obtener(m).cantPorNota[n - 1]                                   //O(log m)
+        endif
+    }
+
+    proc cantAlumnosAprbados(in s: Sistema, in m: materia): Z {
+        if s.pertenece(m)
+            return (s.obtener(m).cantPorNota[6] + s.obtener(m).cantPorNota[7] + s.obtener(m).cantPorNota[8] + s.obtener(m).cantPorNota[9])\
+        endif
+    }
+>
+
+
+Ejercicio 9
+
+1, 3)
+Modulo IngresosAlBancoImpl implementa IngresosAlBanco <
+    var totales: Vector<int>
+
+    proc nuevosIngresos(): IngresosAlBanco {
+        var res: IngresosAlBancoImpl
+        res.totales := new Vector (0)   ????? preguntar en clase
+        return res
+    }
+
+    proc regustrarNuevDia(inout i: IngresosAlBanco, in cant: Z) {
+        ...
+    }
+
+    ... //Creo que la consigna no pide impementar los procs
+>
+
+2) Crece linealmente: O(n)
+
+4) ???? Consultar
+
+Ejercicio 11
+
+a, b)
+Modulo BibiotecaImpl implementa Biblioteca <
+
+    var socios: DiccionarioTrie<Socio, ConjuntoLog<Libro>>
+    var catálogo: DiccionarioLog<Libro, Posición>
+    var posicionesLibres: ConjuntoLog<Posición>
+
+    proc AgregarLibroAlCatálogo(inout b: Biblioteca, in l: idLibro) {     //O(log(k) + log(L))
+        var primeraPosLibre: Posición   //O(1)
+        var posEncontrada: bool     //O(1)
+        primeraPosLibre := 0    //O(1)
+        posEncontrada := False  //O(1)
+
+        if b.posicionesLibres.tamaño > 0 do     //O(1)
+            while posEncontrada == False do     //O(log(L))   L porque para encontrar una posicion vacía existente en el conjunto no vacio el peor caso dependerá de cuantos libros se ubicaron
+                if b.posicionesLibres.pertenece(primeraPosLibre) do     //O(log(k))
+                    posEncontrada := True     //O(1)
+                    b.posicionesLibres.sacar(primeraPosLibre)     //O(log(k))
+                else do
+                    primeraPosLibre := primeraPosLibre + 1    //O(1)
+                endif
+            endwhile
+        endif
+
+        b.catalogo.agregar(primeraPosLibre)     //O(log(L))
+        return    //O(1)
+
+    }
+
+    proc PedirLibro(inout b : Biblioteca, in l : idLibro, in s : Socio) {     //O(log(r) + log(k) + log(L))
+        var librosTomados: ConjuntoLog<Libro>     //O(1)
+        var posLibro: Posición
+        librosTomados := b.socios.obtener(s)     //O(1)
+        librosTomados.agregar(l)     //O(log(r))
+        b.socios.definir(s, librosTomados)     //O(1)
+        posLibro := b.catálogo.obtener(l)     //O(log(L))
+        b.posicionesLibres.agregarRapido(l)     //O(log(k))
+        b.catálogo.borrar(l)     //O(log(L))
+
+        
+    }
+
+    proc DevolverLibro(inout b : Biblioteca, in l : idLibro, in s : Socio) {     //O(log(r) + log(k) + log(L))
+        b.agregarLibroAlCatálogo(l)     //O(log(k) + log(L))
+        var librosTomados: ConjuntoLog<Libro>     //O(1)
+        librosTomados := b.socios.obtener(s)     //O(1)
+        librosTomados.sacar(l)     //O(log(r))
+
+    }
+
+    proc Prestados(in b : Biblioteca, in s : Socio) : ConjuntoLog⟨Libro⟩ {
+        return b.obtener(s)     //O(1)
+    }
+
+    proc UbicaciónDeLibro(in b : Biblioteca, in l : idLibro) : Posicion {
+        return b.catálogo.obtener(l)     //O(log(L))
+    }
+
+Ejercicio 13
+
+a, b)
+Modulo ECIInscripcionesImpl implementa ECIInscripciones <
+
+    var materias: DiccionarioTrie< Materia, struct< capacidad: Capacidad, inscriptos: ConjuntoLog<Alumno>, pendientes: ColaSobreLista<Alumno> > >
+
+    proc abrirMateria(inout i : Inscripciones, in m : Materia, in c : Capacidad) {
+        var valor: struct< capacidad: Capacidad, inscriptos: ConjuntoLog<Alumno>, pendientes: ColaSobreLista<Alumno> >     //O(1)
+        valor.capacidad := c     //O(1)
+        valor.inscriptos := new ConjuntoLog<Alumno>()     //O(1)
+        valor.pendientes := new ColaSobreLista<Alumno>()     //O(1)
+        i.materias.definir(m, valor)     //O(1)
+    }
+
+    proc IntentarInscripcion(inout i : Inscripciones, in m : Materia, in a : Alumno) : bool {     //O(log(a_m))
+        var estadoMateria: struct< capacidad: Capacidad, inscriptos: ConjuntoLog<Alumno>, pendientes: ColaSobreLista<Alumno> >     //O(1)
+        estadoMateria := i.materias.obtener(m)     //O(1)
+        if estadoMateria.inscriptos.tamaño() < estadoMateria.capacidad do     //O(log(a_m))
+            estadoMateria.inscriptos.agregar(a)     //O(log(a_m))
+            i.materias.definir(m, estadoMateria)     //O(1)
+            return True     //O(1)
+        else
+            estadoMateria.pendientes.encolar(a)     //O(1)
+            i.materias.definir(m, estadoMateria)     //O(1)
+            return False     //O(1)
+        endif
+    }
+
+    proc DarseDeBaja(inout i : Inscripciones, in m : Materia, in a : Alumno){
+        var estadoMateria: struct< capacidad: Capacidad, inscriptos: ConjuntoLog<Alumno>, pendientes: ColaSobreLista<Alumno> >     //O(1)
+        estadoMateria := i.materias.obtener(m)     //O(1)
+        estadoMateria.inscriptos.sacar(a)     //O(log(a_m))
+        if not estadoMateria.pendientes.vacia() do
+            var alumnoCola: Alumno
+            alumnoCola := estadoMateria.pendientes.desencolar()
+            estadoMateria.inscriptos.agregar(alumnoCola)
+        endif
+        i.definir(m, estadoMateria)
+    }
+
+    proc InscriptosMateria(in i : Inscripciones, in m : Materia) : Conjunto(Alumno) {
+        var conjInscriptos: ConjuntoLog<Alumno>     //O(1)
+        conjInscriptos := i.obtener(m).inscriptos     //O(1)
+        return conjInscriptos     //O(1)
+    }
