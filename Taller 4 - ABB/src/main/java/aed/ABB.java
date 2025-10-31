@@ -110,14 +110,14 @@ public class ABB<T extends Comparable<T>> {
         Nodo eliminar = _raiz;
         if (pertenece(elem)) {
             _cardinal -= 1;
-            while (eliminar.valor != elem) {
+            while (eliminar.valor.compareTo(elem) != 0) {
                 if (elem.compareTo(eliminar.valor) > 0) {
                     eliminar = eliminar.der;
                 } else {
                     eliminar = eliminar.izq;
                 }
             }
-            if(eliminar.der == null & eliminar.izq == null){
+            if(eliminar.der == null && eliminar.izq == null){
                 if (eliminar != _raiz) {
                     if(eliminar.valor.compareTo(eliminar.padre.valor) > 0){
                         eliminar.padre.der = null;
@@ -128,7 +128,7 @@ public class ABB<T extends Comparable<T>> {
                     _raiz = null;
                 }
                 
-            } else if (eliminar.der != null & eliminar.izq == null) {
+            } else if (eliminar.der != null && eliminar.izq == null) {
                 if (eliminar != _raiz) {
                     if(eliminar.valor.compareTo(eliminar.padre.valor) > 0){
                         eliminar.padre.der = eliminar.der;
@@ -141,7 +141,7 @@ public class ABB<T extends Comparable<T>> {
                     _raiz = eliminar.der;
                     eliminar.der.padre = null;
                 }
-            } else if (eliminar.der == null & eliminar.izq != null) {
+            } else if (eliminar.der == null && eliminar.izq != null) {
                 if (eliminar != _raiz) {
                     eliminar.izq.padre = eliminar.padre;
                     if(eliminar.valor.compareTo(eliminar.padre.valor) > 0){
@@ -153,7 +153,7 @@ public class ABB<T extends Comparable<T>> {
                     _raiz = eliminar.izq;
                     eliminar.izq.padre = null;
                 }
-            } else if (eliminar.der != null & eliminar.izq != null) {
+            } else if (eliminar.der != null && eliminar.izq != null) {
                 Nodo sucesor_inmediato = eliminar.izq;
                 while (sucesor_inmediato.der != null) {
                     sucesor_inmediato = sucesor_inmediato.der;
